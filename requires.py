@@ -18,11 +18,9 @@ from charms.reactive import scopes
 class HadoopPlugin(RelationBase):
     scope = scopes.GLOBAL
 
-    @property
     def yarn_ready(self):
         return self.get_remote('yarn-ready', 'false').lower() == 'true'
 
-    @property
     def hdfs_ready(self):
         return self.get_remote('hdfs-ready', 'false').lower() == 'true'
 
