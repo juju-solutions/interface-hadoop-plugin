@@ -29,3 +29,6 @@ def hadoop_ready(hadoop):
     spark.start()
     status_set('active', 'Spark is ready')
 ```
+
+
+[apache-hadoop-plugin]: https://jujucharms.com/apache-hadoop-plugin/
