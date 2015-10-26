@@ -18,6 +18,7 @@ Hadoop ecosystem.
 
 An example of a charm using this interface would be:
 
+```python
     @hook('install')
     def install():
         spark.install()
@@ -27,3 +28,4 @@ An example of a charm using this interface would be:
         spark.configure()
         spark.start()
         status_set('active', 'Spark is ready')
+```
