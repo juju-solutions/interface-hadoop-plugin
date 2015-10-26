@@ -19,13 +19,13 @@ Hadoop ecosystem.
 An example of a charm using this interface would be:
 
 ```python
-    @hook('install')
-    def install():
-        spark.install()
+@hook('install')
+def install():
+    spark.install()
 
-    @when('yarn.ready', 'hdfs.ready')
-    def hadoop_ready(hadoop):
-        spark.configure()
-        spark.start()
-        status_set('active', 'Spark is ready')
+@when('yarn.ready', 'hdfs.ready')
+def hadoop_ready(hadoop):
+    spark.configure()
+    spark.start()
+    status_set('active', 'Spark is ready')
 ```
