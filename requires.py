@@ -27,6 +27,6 @@ class HadoopPlugin(RelationBase):
     @hook('{requires:hadoop-plugin}-relation-changed')
     def changed(self):
         if self.yarn_ready():
-            self.set_state('yarn.ready')
+            self.set_state('{relation_name}.yarn.ready')
         if self.hdfs_ready():
-            self.set_state('hdfs.ready')
+            self.set_state('{relation_name}.hdfs.ready')

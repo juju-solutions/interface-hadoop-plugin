@@ -3,8 +3,8 @@
 This interface layer handles the communication with a Hadoop deployment via the
 `hadoop-interface` interface protocol.  It will set two states when appropriate:
 
-  * `yarn.ready` indicates that Yarn is available and ready to accept jobs
-  * `hdfs.ready` indicates that HDFS is available and ready to store data
+  * `{relation_name}.yarn.ready` indicates that Yarn is available and ready to accept jobs
+  * `{relation_name}.hdfs.ready` indicates that HDFS is available and ready to store data
 
 In addition, the charm providing this relation (e.g., [apache-hadoop-plugin][])
 will install a JRE and the Hadoop API Java libraries, will manage the Hadoops
@@ -23,8 +23,8 @@ An example of a charm using this interface would be:
 def install():
     spark.install()
 
-@when('yarn.ready', 'hdfs.ready')
-def hadoop_ready(hadoop):
+@when('hadoop.yarn.ready', 'hadoop.hdfs.ready')
+def hadoop_ready(yarn, hdfs):
     spark.configure()
     spark.start()
     status_set('active', 'Spark is ready')
