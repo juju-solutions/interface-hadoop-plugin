@@ -31,4 +31,17 @@ def hadoop_ready(yarn, hdfs):
 ```
 
 
+# Contact Information
+
+- <bigdata@lists.ubuntu.com>
+
+
+# Hadoop
+
+- [Apache Hadoop](http://hadoop.apache.org/) home page
+- [Apache Hadoop bug trackers](http://hadoop.apache.org/issue_tracking.html)
+- [Apache Hadoop mailing lists](http://hadoop.apache.org/mailing_lists.html)
+- [Apache Hadoop Juju Charm](http://jujucharms.com/?text=hadoop)
+
+
 [apache-hadoop-plugin]: https://jujucharms.com/apache-hadoop-plugin/
