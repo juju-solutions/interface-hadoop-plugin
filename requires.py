@@ -1,3 +1,4 @@
+# pylint: disable=too-many-arguments
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -21,15 +22,47 @@ class HadoopPluginRequires(RelationBase):
     @hook('{requires:hadoop-plugin}-relation-joined')
     def joined(self):
         conv = self.conversation()
-        conv.set_state('{relation_name}.connected')
+        conv.set_state('{relation_name}.related')
 
     @hook('{requires:hadoop-plugin}-relation-departed')
     def departed(self):
         conv = self.conversation()
-        conv.remove_state('{relation_name}.connected')
+        conv.remove_state('{relation_name}.related')
 
-    def set_yarn_ready(self):
-        self.set_remote('yarn-ready', True)
+    def set_installed(self, version):
+        self.set_remote(data={
+            'installed': True,
+            'version': version,
+        })
 
-    def set_hdfs_ready(self):
-        self.set_remote('hdfs-ready', True)
+    def set_hdfs_ready(self, host, ip_addr, port):
+        conv = self.conversation()
+        hosts_map = conv.get_local('hosts-map', {})
+        hosts_map.update({ip_addr: host})
+        conv.set_local('hosts-map', hosts_map)
+        conv.set_remote(data={
+            'hdfs-ready': True,
+            'hdfs-host': host,
+            'hdfs-port': port,
+            'hosts-map': hosts_map,
+        })
+
+    def clear_hdfs_ready(self):
+        self.set_remote('hdfs-ready', False)
+
+    def set_yarn_ready(self, host, ip_addr, port, hs_http_port, hs_ipc_port):
+        conv = self.conversation()
+        hosts_map = conv.get_local('hosts-map', {})
+        hosts_map.update({ip_addr: host})
+        conv.set_local('hosts-map', hosts_map)
+        conv.set_remote(data={
+            'yarn-ready': True,
+            'yarn-host': host,
+            'yarn-port': port,
+            'yarn-hs-http-port': hs_http_port,
+            'yarn-hs-ipc-port': hs_ipc_port,
+            'hosts-map': hosts_map,
+        })
+
+    def clear_yarn_ready(self):
+        self.set_remote('yarn-ready', False)

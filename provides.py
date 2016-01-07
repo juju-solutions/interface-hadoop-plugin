@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 from charms.reactive import RelationBase
 from charms.reactive import hook
 from charms.reactive import scopes
@@ -17,31 +18,51 @@ from charms.reactive import scopes
 
 class HadoopPluginProvides(RelationBase):
     scope = scopes.GLOBAL
+    auto_accessors = ['version',
+                      'hdfs-host', 'hdfs-port',
+                      'yarn-host', 'yarn-port',
+                      'yarn-hs-http-port', 'yarn-hs-ipc-port']
 
-    def yarn_ready(self):
-        return self.get_remote('yarn-ready', 'false').lower() == 'true'
+    def installed(self):
+        return self.version() and self.get_remote('installed', 'false').lower() == 'true'
 
     def hdfs_ready(self):
-        return self.get_remote('hdfs-ready', 'false').lower() == 'true'
+        available = all([self.hdfs_ip_addr(), self.hdfs_port()])
+        ready = self.get_remote('hdfs-ready', 'false').lower() == 'true'
+        return available and ready
+
+    def yarn_ready(self):
+        available = all([self.yarn_ip_addr(), self.yarn_port(),
+                         self.yarn_hs_http_port(), self.yarn_hs_ipc_port()])
+        ready = self.get_remote('yarn-ready', 'false').lower() == 'true'
+        return available and ready
+
+    def hosts_map(self):
+        conv = self.conversation()
+        return json.loads(conv.get_remote('hosts-map', '{}'))
 
     @hook('{provides:hadoop-plugin}-relation-joined')
     def joined(self):
         conv = self.conversation()
-        conv.set_state('{relation_name}.connected')
+        conv.set_state('{relation_name}.related')
 
     @hook('{provides:hadoop-plugin}-relation-changed')
     def changed(self):
-        if self.yarn_ready():
-            self.set_state('{relation_name}.yarn.ready')
-        if self.hdfs_ready():
-            self.set_state('{relation_name}.hdfs.ready')
-        if self.yarn_ready() and self.hdfs_ready():
-            self.set_state('{relation_name}.ready')
+        conv = self.conversation()
+        if self.installed():
+            conv.set_state('{relation_name}.installed')
+        if self.installed() and self.hdfs_ready():
+            conv.set_state('{relation_name}.hdfs.ready')
+        if self.installed() and self.yarn_ready():
+            conv.set_state('{relation_name}.yarn.ready')
+        if self.installed() and self.hdfs_ready() and self.yarn_ready():
+            conv.set_state('{relation_name}.ready')
 
     @hook('{provides:hadoop-plugin}-relation-departed')
     def departed(self):
         conv = self.conversation()
-        conv.remove_state('{relation_name}.connected')
+        conv.remove_state('{relation_name}.related')
+        conv.remove_state('{relation_name}.installed')
         conv.remove_state('{relation_name}.ready')
-        conv.remove_state('{relation_name}.yarn.ready')
         conv.remove_state('{relation_name}.hdfs.ready')
+        conv.remove_state('{relation_name}.yarn.ready')
