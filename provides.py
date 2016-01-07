@@ -19,27 +19,32 @@ from charms.reactive import scopes
 class HadoopPluginProvides(RelationBase):
     scope = scopes.GLOBAL
     auto_accessors = ['version',
-                      'hdfs-host', 'hdfs-port',
-                      'yarn-host', 'yarn-port',
-                      'yarn-hs-http-port', 'yarn-hs-ipc-port']
+                      'hdfs-port',
+                      'yarn-port',
+                      'yarn-hs-http-port',
+                      'yarn-hs-ipc-port']
 
     def installed(self):
         return self.version() and self.get_remote('installed', 'false').lower() == 'true'
 
     def hdfs_ready(self):
-        available = all([self.hdfs_ip_addr(), self.hdfs_port()])
+        available = all([self.namenodes(), self.hdfs_port()])
         ready = self.get_remote('hdfs-ready', 'false').lower() == 'true'
         return available and ready
 
     def yarn_ready(self):
-        available = all([self.yarn_ip_addr(), self.yarn_port(),
+        available = all([self.resourcemanagers(), self.yarn_port(),
                          self.yarn_hs_http_port(), self.yarn_hs_ipc_port()])
         ready = self.get_remote('yarn-ready', 'false').lower() == 'true'
         return available and ready
 
-    def hosts_map(self):
+    def namenodes(self):
         conv = self.conversation()
-        return json.loads(conv.get_remote('hosts-map', '{}'))
+        return json.loads(conv.get_remote('hdfs-namenodes', '[]'))
+
+    def resourcemanagers(self):
+        conv = self.conversation()
+        return json.loads(conv.get_remote('yarn-resourcemanagers', '[]'))
 
     @hook('{provides:hadoop-plugin}-relation-joined')
     def joined(self):

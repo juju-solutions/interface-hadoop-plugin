@@ -35,33 +35,25 @@ class HadoopPluginRequires(RelationBase):
             'version': version,
         })
 
-    def set_hdfs_ready(self, host, ip_addr, port):
+    def set_hdfs_ready(self, namenodes, port):
         conv = self.conversation()
-        hosts_map = conv.get_local('hosts-map', {})
-        hosts_map.update({ip_addr: host})
-        conv.set_local('hosts-map', hosts_map)
         conv.set_remote(data={
             'hdfs-ready': True,
-            'hdfs-host': host,
+            'hdfs-namenodes': namenodes,
             'hdfs-port': port,
-            'hosts-map': hosts_map,
         })
 
     def clear_hdfs_ready(self):
         self.set_remote('hdfs-ready', False)
 
-    def set_yarn_ready(self, host, ip_addr, port, hs_http_port, hs_ipc_port):
+    def set_yarn_ready(self, resourcemanagers, port, hs_http_port, hs_ipc_port):
         conv = self.conversation()
-        hosts_map = conv.get_local('hosts-map', {})
-        hosts_map.update({ip_addr: host})
-        conv.set_local('hosts-map', hosts_map)
         conv.set_remote(data={
             'yarn-ready': True,
-            'yarn-host': host,
+            'yarn-resourcemanagers': resourcemanagers,
             'yarn-port': port,
             'yarn-hs-http-port': hs_http_port,
             'yarn-hs-ipc-port': hs_ipc_port,
-            'hosts-map': hosts_map,
         })
 
     def clear_yarn_ready(self):
