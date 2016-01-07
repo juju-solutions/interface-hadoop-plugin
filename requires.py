@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 from charms.reactive import RelationBase
 from charms.reactive import hook
 from charms.reactive import scopes
@@ -39,7 +40,7 @@ class HadoopPluginRequires(RelationBase):
         conv = self.conversation()
         conv.set_remote(data={
             'hdfs-ready': True,
-            'hdfs-namenodes': namenodes,
+            'hdfs-namenodes': json.dumps(namenodes),
             'hdfs-port': port,
         })
 
@@ -50,7 +51,7 @@ class HadoopPluginRequires(RelationBase):
         conv = self.conversation()
         conv.set_remote(data={
             'yarn-ready': True,
-            'yarn-resourcemanagers': resourcemanagers,
+            'yarn-resourcemanagers': json.dumps(resourcemanagers),
             'yarn-port': port,
             'yarn-hs-http-port': hs_http_port,
             'yarn-hs-ipc-port': hs_ipc_port,
