@@ -47,11 +47,11 @@ class HadoopPluginRequires(RelationBase):
     def clear_hdfs_ready(self):
         self.set_remote('hdfs-ready', False)
 
-    def set_yarn_ready(self, resourcemanagers, port, hs_http_port, hs_ipc_port):
+    def set_yarn_ready(self, hosts, port, hs_http_port, hs_ipc_port):
         conv = self.conversation()
         conv.set_remote(data={
             'yarn-ready': True,
-            'yarn-resourcemanagers': json.dumps(resourcemanagers),
+            'yarn-resourcemanagers': json.dumps(hosts),
             'yarn-port': port,
             'yarn-hs-http-port': hs_http_port,
             'yarn-hs-ipc-port': hs_ipc_port,
