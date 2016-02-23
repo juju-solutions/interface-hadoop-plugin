@@ -25,7 +25,8 @@ class HadoopPluginProvides(RelationBase):
                       'yarn-hs-ipc-port']
 
     def installed(self):
-        return self.version() and self.get_remote('installed', 'false').lower() == 'true'
+        installed = self.get_remote('installed', 'false').lower() == 'true'
+        return self.version() and installed
 
     def hdfs_ready(self):
         available = all([self.namenodes(), self.hdfs_port()])

@@ -74,9 +74,11 @@ appropriate:
 The instance passed into the handler for the above state supports the following
 methods:
 
-  * `set_yarn_ready()` Let the client know that Yarn is ready to run map-reduce jobs.
+  * `set_yarn_ready(hosts, port, hs_http, hs_ipc)`
+    Let the client know that Yarn is ready to run map-reduce jobs.
 
-  * `set_hdfs_ready()` Let the client know that HDFS is ready to store data.
+  * `set_hdfs_ready(hosts, port)`
+    Let the client know that HDFS is ready to store data.
 
 An example of a charm using this interface would be:
 
@@ -89,12 +91,14 @@ def install(client):
 @when('client.connected', 'yarn.ready')
 def yarn_ready(client, yarn):
     hadoop.configure_yarn_client(yarn)
-    client.set_yarn_ready()
+    client.set_yarn_ready(
+        yarn.resourcemanagers(), yarn.port(),
+        yarn.hs_http(), yarn.hs_ipc())
 
 @when('client.connected', 'hdfs.ready')
 def hdfs_ready(client, hdfs):
     hadoop.configure_hdfs_client(hdfs)
-    client.set_yarn_ready()
+    client.set_hdfs_ready(hdfs.namenodes(), hdfs.port())
 ```
 
 
