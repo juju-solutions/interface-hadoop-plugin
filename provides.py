@@ -50,7 +50,7 @@ class HadoopPluginProvides(RelationBase):
     @hook('{provides:hadoop-plugin}-relation-joined')
     def joined(self):
         conv = self.conversation()
-        conv.set_state('{relation_name}.related')
+        conv.set_state('{relation_name}.joined')
 
     @hook('{provides:hadoop-plugin}-relation-changed')
     def changed(self):
@@ -67,7 +67,7 @@ class HadoopPluginProvides(RelationBase):
     @hook('{provides:hadoop-plugin}-relation-departed')
     def departed(self):
         conv = self.conversation()
-        conv.remove_state('{relation_name}.related')
+        conv.remove_state('{relation_name}.joined')
         conv.remove_state('{relation_name}.installed')
         conv.remove_state('{relation_name}.ready')
         conv.remove_state('{relation_name}.hdfs.ready')

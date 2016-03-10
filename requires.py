@@ -23,12 +23,12 @@ class HadoopPluginRequires(RelationBase):
     @hook('{requires:hadoop-plugin}-relation-joined')
     def joined(self):
         conv = self.conversation()
-        conv.set_state('{relation_name}.related')
+        conv.set_state('{relation_name}.joined')
 
     @hook('{requires:hadoop-plugin}-relation-departed')
     def departed(self):
         conv = self.conversation()
-        conv.remove_state('{relation_name}.related')
+        conv.remove_state('{relation_name}.joined')
 
     def set_installed(self, version):
         self.set_remote(data={

@@ -14,9 +14,11 @@ as the principal, or host container, to the plugin, and thus must provide a
 The interface layer will set the following states for the client to react to,
 as appropriate:
 
-  * `{relation_name}.connected` The relation between the client and the plugin
+  * `{relation_name}.joined` The relation between the client and the plugin
      is established, but one or both of Yarn or HDFS may not yet be available
      to provide their service.
+
+  * `{relation_name}.yarn.installed` Hadoop is installed.
 
   * `{relation_name}.yarn.ready` Yarn is connected and ready to run map-reduce jobs.
 
@@ -38,11 +40,11 @@ An example of a charm using this interface would be:
 def install():
     spark.install()
 
-@when_not('hadoop.connected')
+@when_not('hadoop.joined')
 def blocked():
     hookenv.status_set('blocked', 'Please add relation to Hadoop Plugin')
 
-@when('hadoop.connected')
+@when('hadoop.joined')
 @when_not('hadoop.ready')
 def waiting(hadoop):
     hookenv.status_set('waiting', 'Waiting for Hadoop to become ready')
@@ -66,7 +68,7 @@ to connect to.
 The interface layer will set the following state for the plugin to react to, as
 appropriate:
 
-  * `{relation_name}.connected` The relation between the plugin and the client
+  * `{relation_name}.joined` The relation between the plugin and the client
      is established, and the plugin should install all libraries and dependencies,
      configure the environment, etc.  The plugin should also call the methods on
      the instance provided by this state to indicate when Yarn and HDFS are ready.
@@ -83,19 +85,19 @@ methods:
 An example of a charm using this interface would be:
 
 ```python
-@when('client.connected')
+@when('client.joined')
 def install(client):
     hadoop.install()
     hadoop.configure_client()
 
-@when('client.connected', 'yarn.ready')
+@when('client.joined', 'yarn.ready')
 def yarn_ready(client, yarn):
     hadoop.configure_yarn_client(yarn)
     client.set_yarn_ready(
         yarn.resourcemanagers(), yarn.port(),
         yarn.hs_http(), yarn.hs_ipc())
 
-@when('client.connected', 'hdfs.ready')
+@when('client.joined', 'hdfs.ready')
 def hdfs_ready(client, hdfs):
     hadoop.configure_hdfs_client(hdfs)
     client.set_hdfs_ready(hdfs.namenodes(), hdfs.port())
