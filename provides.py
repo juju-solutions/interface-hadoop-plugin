@@ -72,3 +72,10 @@ class HadoopPluginProvides(RelationBase):
         conv.remove_state('{relation_name}.ready')
         conv.remove_state('{relation_name}.hdfs.ready')
         conv.remove_state('{relation_name}.yarn.ready')
+
+    def set_java_info(self, java_home, java_version):
+        conv = self.conversation()
+        conv.set_remote(data={
+            'java-home': java_home,
+            'java-version': java_version,
+        })

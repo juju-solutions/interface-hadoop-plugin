@@ -19,16 +19,24 @@ from charms.reactive import scopes
 
 class HadoopPluginRequires(RelationBase):
     scope = scopes.GLOBAL
+    auto_accessors = ['java-home', 'java-version']
 
     @hook('{requires:hadoop-plugin}-relation-joined')
     def joined(self):
         conv = self.conversation()
         conv.set_state('{relation_name}.joined')
 
+    @hook('{requires:hadoop-plugin}-relation-changed')
+    def changed(self):
+        conv = self.conversation()
+        if self.java_home():
+            conv.set_state('{relation_name}.java.ready')
+
     @hook('{requires:hadoop-plugin}-relation-departed')
     def departed(self):
         conv = self.conversation()
         conv.remove_state('{relation_name}.joined')
+        conv.remove_state('{relation_name}.java.ready')
 
     def set_installed(self, version):
         self.set_remote(data={
