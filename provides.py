@@ -55,14 +55,17 @@ class HadoopPluginProvides(RelationBase):
     @hook('{provides:hadoop-plugin}-relation-changed')
     def changed(self):
         conv = self.conversation()
-        if self.installed():
-            conv.set_state('{relation_name}.installed')
-        if self.installed() and self.hdfs_ready():
-            conv.set_state('{relation_name}.hdfs.ready')
-        if self.installed() and self.yarn_ready():
-            conv.set_state('{relation_name}.yarn.ready')
-        if self.installed() and self.hdfs_ready() and self.yarn_ready():
-            conv.set_state('{relation_name}.ready')
+        installed = self.installed()
+        hdfs_ready = self.hdfs_ready()
+        yarn_ready = self.yarn_ready()
+        conv.toggle_state('{relation_name}.installed',
+                          installed)
+        conv.toggle_state('{relation_name}.hdfs.ready',
+                          installed and hdfs_ready)
+        conv.toggle_state('{relation_name}.yarn.ready',
+                          installed and yarn_ready)
+        conv.toggle_state('{relation_name}.ready',
+                          installed and hdfs_ready and yarn_ready)
 
     @hook('{provides:hadoop-plugin}-relation-departed')
     def departed(self):
